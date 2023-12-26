@@ -4,6 +4,9 @@ from  model import preprocess_text, predict
 import pandas as pd 
 from django.contrib import messages
 from itertools import zip_longest  # Import zip_longest from itertools
+import matplotlib.pyplot as plt
+from io import BytesIO
+import base64
 # Create your views here.
 
 
@@ -43,11 +46,13 @@ def index(request):
 
 
 
+
 def analyze_csv(request):
     inputCSV = None
     sentiment = []
     model = joblib.load('trained_model.pkl')
     vectorizer = joblib.load('vectorizer.pkl')
+    reviews = []
 
     if request.method == 'POST':
         inputCSV = request.FILES.get('inputCSV')
@@ -65,9 +70,32 @@ def analyze_csv(request):
                     vectorized_review = vectorizer.transform([preprocessed_review])
                     prediction = model.predict(vectorized_review)
                     sentiment.append("Negative" if prediction == 0 else "Positive")
-                
+
                 zipped_data = list(zip_longest(reviews, sentiment, fillvalue=None))
 
+                # Count the number of positive and negative sentiments
+                positive_count = sentiment.count('Positive')
+                negative_count = sentiment.count('Negative')
+
+                # Create a bar chart
+                labels = ['Positive', 'Negative']
+                counts = [positive_count, negative_count]
+
+                plt.bar(labels, counts)
+                plt.title('Sentiment Proportions')
+                plt.xlabel('Sentiment')
+                plt.ylabel('Count')
+
+                # Save the plot to a BytesIO object
+                image_stream = BytesIO()
+                plt.savefig(image_stream, format='png')
+                plt.close()
+
+                # Move the stream position to the beginning to be able to read it
+                image_stream.seek(0)
+
+                # Embed the image data in the HTML response
+                chart_data = base64.b64encode(image_stream.getvalue()).decode('utf-8')
 
             except Exception as e:
                 messages.error(request, "An error occurred while processing the CSV file.")
@@ -76,4 +104,5 @@ def analyze_csv(request):
         'reviews': reviews,
         'sentiment': sentiment,
         'zipped_data': zipped_data,
+        'chart_data': chart_data,
     })

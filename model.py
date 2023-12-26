@@ -21,7 +21,7 @@ import joblib
 # # # nltk.download('wordnet')
 
 # # # Load the data
-data = pd.read_csv('IMDB Dataset.csv')
+#data = pd.read_csv('IMDB Dataset.csv')
 
 # # # Define a function to clean and preprocess the text
 def preprocess_text(text):
@@ -43,36 +43,36 @@ def preprocess_text(text):
     return ' '.join(words)
 
 # # # Apply the preprocessing function to the 'review' column
-data['review'] = data['review'].apply(preprocess_text)
+#data['review'] = data['review'].apply(preprocess_text)
 
 
 # #  #encoding labels into 1's and 0's , i.e  numerical representations.
-reviews = data['review'].values
-labels = data['sentiment'].values
-encoder = LabelEncoder()
-encoded_labels = encoder.fit_transform(labels)
+# reviews = data['review'].values
+# labels = data['sentiment'].values
+# encoder = LabelEncoder()
+# encoded_labels = encoder.fit_transform(labels)
 
 # # #splitting and stratification 
 # # # used test size for the proportion to be 80% train set and 20% test set 
-train_sentences, test_sentences, train_labels, test_labels = train_test_split(
-    reviews, encoded_labels, stratify=encoded_labels, test_size=0.2)
+# train_sentences, test_sentences, train_labels, test_labels = train_test_split(
+#     reviews, encoded_labels, stratify=encoded_labels, test_size=0.2)
 
 
 # # ## Manual implementation of naive byers classifier 
 # # Create a CountVectorizer
-vec = CountVectorizer(max_features = 3000)
-X = vec.fit_transform(train_sentences)
-vocab = vec.get_feature_names_out()
-X = X.toarray()
+# vec = CountVectorizer(max_features = 3000)
+# X = vec.fit_transform(train_sentences)
+# vocab = vec.get_feature_names_out()
+# X = X.toarray()
 
 # # Calculate word counts
-word_counts = {}
-for l in range(2):
-    word_counts[l] = defaultdict(lambda: 0)
-for i in range(X.shape[0]):
-    l = train_labels[i]
-    for j in range(len(vocab)):
-        word_counts[l][vocab[j]] += X[i][j]
+# word_counts = {}
+# for l in range(2):
+#     word_counts[l] = defaultdict(lambda: 0)
+# for i in range(X.shape[0]):
+#     l = train_labels[i]
+#     for j in range(len(vocab)):
+#         word_counts[l][vocab[j]] += X[i][j]
 
 
 def laplace_smoothing(n_label_items, vocab, word_counts, word, text_label):
@@ -113,10 +113,10 @@ def predict(n_label_items, vocab, word_counts, log_label_priors, labels, x):
     return result
 
 
-labels = [0,1]
-n_label_items, log_label_priors = fit(train_sentences,train_labels,labels)
-pred = predict(n_label_items, vocab, word_counts, log_label_priors, labels, test_sentences)
-print("Accuracy of prediction on test set : ", accuracy_score(test_labels,pred))
+# labels = [0,1]
+# n_label_items, log_label_priors = fit(train_sentences,train_labels,labels)
+# pred = predict(n_label_items, vocab, word_counts, log_label_priors, labels, test_sentences)
+# print("Accuracy of prediction on test set : ", accuracy_score(test_labels,pred))
 
 
 # # # Create a Multinomial Naive Bayes classifier
