@@ -53,6 +53,8 @@ def analyze_csv(request):
     model = joblib.load('trained_model.pkl')
     vectorizer = joblib.load('vectorizer.pkl')
     reviews = []
+    zipped_data=[]
+    chart_data = []
 
     if request.method == 'POST':
         inputCSV = request.FILES.get('inputCSV')
